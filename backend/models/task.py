@@ -12,7 +12,7 @@ class Task(db.Model):
     due_date = db.Column(TIMESTAMP, nullable = True)
     is_completed = db.Column(Boolean , nullable=False, default = False)
     created_at = db.Column(TIMESTAMP, server_default = db.func.now())
-    priority = db.Column(Enum("Important AND Urgent", "Important AND Not Urgent", "Not Important AND Urgent", "Not Important AND Not Urgent"), nullable = False, server_default = "Important AND Not Urgent")
+    priority = db.Column(Enum("Important AND Urgent", "Important AND Not Urgent", "Not Important AND Urgent", "Not Important AND Not Urgent"),name='priority_enum', nullable = False, server_default = "Important AND Not Urgent")
 
 
     def to_dict(self):
