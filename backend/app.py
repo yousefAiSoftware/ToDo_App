@@ -12,10 +12,6 @@ def create_app(config_class=Config):
     @app.route("/")
     def index():
         return "ToDo App is Running !"
-    @app.route('/init-db/nr45ybimn498hnqhwj6wj4') # <-- استخدم أي نص سري وعشوائي هنا
-    def init_db():
-        db.create_all()
-        return "Database has been successfully initialized!"
     app.register_blueprint(tasks_db, url_prefix = "/api")
     app.register_blueprint(users_db, url_prefix="/api/auth")
     return app
