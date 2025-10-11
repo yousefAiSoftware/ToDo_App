@@ -2,11 +2,23 @@ from flask import Blueprint , jsonify , request
 from models.task import Task
 from models.database import db
 from utils.auth_helper import token_required
+from datetime import datetime
 
 tasks_db = Blueprint("tasks",__name__)
 
-
-
+def parse_datetime(date_string):
+    """Convert datetime string to Python datetime object"""
+    if not date_string:
+        return None
+    try:
+        # Handle HTML datetime-local format: 2025-10-11T12:16
+        return datetime.fromisoformat(date_string.replace('T', ' '))
+    except ValueError:
+        try:
+            # Handle other common formats
+            return datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            return None
 
 @tasks_db.route("/tasks", methods = ["POST", "GET"])
 @token_required
@@ -15,15 +27,23 @@ def handle_tasks(current_user):
         task_data = request.get_json()
         if not task_data or not "title" in task_data:
             return jsonify({"error":"Missing data"}),400
-        if ("start_task_time" not in task_data) and ("duration" not in task_data) and ("due_date" not in task_data):
-            return jsonify({'error': 'At least one of start_task_time, or duration, or due_date is required'}), 400
+        
+        # Parse datetime fields
+        start_task_time = parse_datetime(task_data.get("start_task_time"))
+        due_date = parse_datetime(task_data.get("due_date"))
+        duration = task_data.get("duration")  # Keep as string for Time field
+        
+        # Check if at least one time-related field is provided (but make it optional)
+        # if not start_task_time and not duration and not due_date:
+        #     return jsonify({'error': 'At least one of start_task_time, or duration, or due_date is required'}), 400
+        
         new_task = Task(
-            user_id = current_user.id, # Have to develop
+            user_id = current_user.id,
             title=task_data["title"],
             task_description=task_data.get("task_description"),
-            start_task_time=task_data.get("start_task_time"),
-            duration=task_data.get("duration"),
-            due_date=task_data.get("due_date"),
+            start_task_time=start_task_time,
+            duration=duration,
+            due_date=due_date,
             priority=task_data.get("priority", "Important AND Not Urgent"),
             )
         db.session.add(new_task)
