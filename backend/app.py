@@ -6,13 +6,14 @@ from routes.task_routes import tasks_db
 from routes.user_routes import users_db
 from models.user import User
 from models.task import Task
+from flask_cors import CORS
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
-    
+
     # Enable CORS for all routes
-    CORS(app, origins=['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:3001', 'http://127.0.0.1:3001'])
+    CORS(app, origins=['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:3001', 'http://127.0.0.1:3001', 'https://todo-app-frontend-rhv5.onrender.com'])
     
     db.init_app(app)
     @app.route("/")

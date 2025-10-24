@@ -6,3 +6,4 @@ python-dotenv
 PyJWT
 gunicorn
 psycopg2-binary
+Flask-CORS
